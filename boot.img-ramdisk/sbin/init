@@ -1,23 +1,28 @@
 #!/sbin/busybox sh
 
-cd /sbin
-
-for i in $(./busybox --list)
-do
-	./busybox ln -s busybox $i
-done
-
 cd /
 
 mount -t proc proc /proc
 mount -t sysfs sysfs /sys
 
 mkdir -p /dev/block
+mkdir /dev/input
+
+for i in 0 1 2 3 4 5 6 7 8 9 10 11 ; do
+        event=$((0+$i))
+        minor=$((64+$i))
+        mknod /dev/input/event$event c 13 $minor
+done
+
 mknod /dev/block/mmcblk0p20 b 179 20
-mount -t ext4 /dev/block/mmcblk0p20 /system
+mknod /dev/block/mmcblk0p23 b 179 23
+mknod /dev/block/loop0 b 7 0
+
+mount -t ext4 /dev/block/mmcblk0p23 /data
 
 out() {
 	umount -f /system
+    umount -f /data
 
 	chmod 755 /init
 	chmod 644 /*.qcom
@@ -28,8 +33,79 @@ out() {
 	exec /init
 }
 
+[ -e /data/media/.nextboot ] && rm -f /data/media/.nextboot
+
+if grep -q androidboot.boot_recovery=1 /proc/cmdline ; then
+    rm -f /data/media/rebootrs
+    mv -f /res/etc /
+    mv -f /res/generic44/* /
+    mv -f /res/recovery/* /
+    out
+fi
+
+echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+KEY=`/sbin/ext/evkey -u -t 2000 /dev/input/event11`
+if [ "$KEY" == "172" ]; then
+    KEYNEXT=`/sbin/ext/evkey -u -t 500 /dev/input/event11`
+    if [ "$KEYNEXT" == "172" ]; then
+        echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+        sleep 0.3
+        echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+        echo 1 > /data/media/.rom
+    else
+        echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+        echo 0 > /data/media/.rom
+    fi
+elif [ "$KEY" == "114" ]; then
+    KEYNEXT=`/sbin/ext/evkey -u -t 1500 /dev/input/event11`
+    if [ "$KEYNEXT" == "114" ]; then
+        echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+        sleep 0.3
+        echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+        sleep 0.3
+        echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+        sleep 0.3
+        echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+        echo 3 > /data/media/.rom
+    else
+        echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+        sleep 0.3
+        echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+        sleep 0.3
+        echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+        echo 2 > /data/media/.rom
+    fi
+elif [ "$KEY" == "115" ]; then
+    echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+    sleep 0.3
+    echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+    sleep 0.3
+    echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+    sleep 0.3
+    echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+    sleep 0.3
+    echo 150 > /sys/devices/virtual/timed_output/vibrator/enable
+    echo 4 > /data/media/.rom
+fi
+
+ROM=`cat /data/media/.rom`
+[ -e /data/media/.rom ] || ROM=0
+
+[ "$ROM" == "0" ] && mount -t ext4 -o rw /dev/block/mmcblk0p20 /system
+[ "$ROM" == "1" ] && mount -t ext4 -o rw /data/media/.secondrom/system.img /system
+[ "$ROM" == "2" ] && mount -t ext4 -o rw /data/media/.thirdrom/system.img /system
+[ "$ROM" == "3" ] && mount -t ext4 -o rw /data/media/.fourthrom/system.img /system
+[ "$ROM" == "4" ] && mount -t ext4 -o rw /data/media/.fifthrom/system.img /system
+
 if grep -q ro.build.version.sdk=19 /system/build.prop ; then
+    mv -f /res/generic44/* /
     mv -f /res/aosp44/* /
 fi
+
+[ "$ROM" == "0" ] || mv -f /fstab.qcom.2 /fstab.qcom
+[ "$ROM" == "1" ] && mv -f /init.target.rc.second /init.target.rc
+[ "$ROM" == "2" ] && mv -f /init.target.rc.third /init.target.rc
+[ "$ROM" == "3" ] && mv -f /init.target.rc.fourth /init.target.rc
+[ "$ROM" == "4" ] && mv -f /init.target.rc.fifth /init.target.rc
 
 out
