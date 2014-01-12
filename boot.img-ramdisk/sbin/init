@@ -103,6 +103,7 @@ if grep -q ro.build.version.sdk=19 /system/build.prop ; then
 fi
 
 [ "$ROM" == "0" ] || mv -f /fstab.qcom.2 /fstab.qcom
+[ "$ROM" == "0" ] || mv -f /init.qcom.rc.2 /init.qcom.rc
 [ "$ROM" == "1" ] && mv -f /init.target.rc.second /init.target.rc
 [ "$ROM" == "2" ] && mv -f /init.target.rc.third /init.target.rc
 [ "$ROM" == "3" ] && mv -f /init.target.rc.fourth /init.target.rc

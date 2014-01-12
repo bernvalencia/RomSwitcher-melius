@@ -7,7 +7,12 @@ mkdir -p /.firstrom/media/0/romswitcher-tmp
 mount --bind /.firstrom/media/0/romswitcher-tmp /romswitcher
 
 mount -o remount,rw /system
+/sbin/busybox mount -t rootfs -o remount,rw rootfs
+
+mount -t tmpfs tmpfs /system/lib/modules
+
 chmod 755 /system
+ln -s /lib/modules/* /system/lib/modules/
 
 if [ "$ROM" == "secondary" ]; then
     mkdir -p /.firstrom/media/.secondrom/data/app
@@ -32,6 +37,10 @@ elif [ "$ROM" == "tertiary" ]; then
     cp -f /.firstrom/app/com.grarak.*.apk /.firstrom/media/.thirdrom/data/app/
     chmod 755 /.firstrom/media/.thirdrom/data/app/*.apk
 elif [ "$ROM" == "quaternary" ]; then
+    mkdir -p /.firstrom/media/.fourthrom/data/app
+    cp -f /.firstrom/app/com.grarak.*.apk /.firstrom/media/.fourthrom/data/app/
+    chmod 755 /.firstrom/media/.fourthrom/data/app/*.apk
+elif [ "$ROM" == "quinary" ]; then
     mkdir -p /.firstrom/media/.fourthrom/data/app
     cp -f /.firstrom/app/com.grarak.*.apk /.firstrom/media/.fourthrom/data/app/
     chmod 755 /.firstrom/media/.fourthrom/data/app/*.apk
