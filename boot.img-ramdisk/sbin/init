@@ -97,10 +97,13 @@ ROM=`cat /data/media/.rom`
 [ "$ROM" == "3" ] && mount -t ext4 -o rw /data/media/.fourthrom/system.img /system
 [ "$ROM" == "4" ] && mount -t ext4 -o rw /data/media/.fifthrom/system.img /system
 
-if grep -q ro.build.version.sdk=19 /system/build.prop ; then
-    mv -f /res/generic44/* /
-    mv -f /res/aosp44/* /
+if [ ! -e /system/build.prop ]; then
+    echo 500 > /sys/devices/virtual/timed_output/vibrator/enable
+    echo 0 > /data/media/.rom
 fi
+
+mv -f /res/generic44/* /
+mv -f /res/aosp44/* /
 
 [ "$ROM" == "0" ] || mv -f /fstab.qcom.2 /fstab.qcom
 [ "$ROM" == "0" ] || mv -f /init.qcom.rc.2 /init.qcom.rc
