@@ -7,10 +7,11 @@ cat << CTAG
 	{ STitleBar:{
 		title:"Battery"
 	}},
-	{ SButton:{
-                label:"Detect live charging source [Charge/Now]",
-                action:"charge-source"
-        }},
+	{ SLiveLabel:{
+		title:"Charging Source [Charge/Now]",
+		refresh:500,
+		action:"charge-source"
+	}},
 	{ SCheckBox:{
 		description:"Enable this will increase the charing speed with USB, but disable usb mass storage.",
                 label:"Force Fast Charge",
@@ -21,7 +22,7 @@ cat << CTAG
                 title:"IntelliPlug"
         }},
 	{ SCheckBox:{
-		description:"IntelliPlug is a total replacement for Qualcomm's proprietary mpdecsion. It hotplugs/unplugs CPU cores based on load demand of the system. MPDecision is a closed source proprietary solution from Qualcomm and it is not very efficient at hotpluging/unpluging CPU cores leading to hotter cpu and poor battery. Faux's IntelliPlug is a complete Open Source solution to MPDecision and it is done in kernel instead of userspace (which it has to poll the kernel in order to make its decisions therefore inherently slower than in kernel solution like IntelliPlug).",
+		description:"IntelliPlug is a total replacement for Qualcomm's proprietary MPDecsion. It hotplugs/unplugs CPU cores based on load demand of the system. MPDecision is a closed source proprietary solution from Qualcomm and it is not very efficient at hotpluging/unpluging CPU cores leading to hotter cpu and poor battery. Faux's IntelliPlug is a complete Open Source solution to MPDecision and it is done in kernel instead of userspace (which it has to poll the kernel in order to make its decisions therefore inherently slower than in kernel solution like IntelliPlug).",
                 label:"Enable IntelliPlug",
                 default:`cat /sys/module/intelli_plug/parameters/intelli_plug_active`,
                 action:"generic /sys/module/intelli_plug/parameters/intelli_plug_active"
@@ -48,7 +49,7 @@ cat << CTAG
 	{ SSeekBar:{
 		description:"Change sensitivity of vibration.",
 		title:"Vibration Control",
-                max:100,
+                max:100, step:4,
 		default:`cat /sys/vibrator/pwm_val`,
                 action:"generic /sys/vibrator/pwm_val"
         }},
