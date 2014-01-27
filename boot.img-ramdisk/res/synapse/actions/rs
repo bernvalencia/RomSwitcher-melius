@@ -1,0 +1,46 @@
+case $1 in
+
+reboot)
+	echo $2 > /data/media/.rom
+	echo $2 > /.firstrom/media/.rom
+	reboot
+	;;
+
+recovery)
+	dd if=/dev/block/platform/msm_sdcc.1/by-name/boot of=/dev/block/platform/msm_sdcc.1/by-name/recovery
+	echo "Recovery has been installed"
+	;;
+
+appshare)
+	if [[ ! -z $2 ]]; then
+		if [ -e /sdcard/romswitcher-tmp/appshare ]; then
+			rm -f /sdcard/romswitcher-tmp/appshare
+		else
+			echo $2 > /sdcard/romswitcher-tmp/appshare
+		fi
+	fi
+
+	if [ -e /sdcard/romswitcher-tmp/appshare ]; then
+		echo 1
+	else
+		echo 0
+	fi
+	;;
+
+datashare)
+	if [[ ! -z $2 ]]; then
+		if [ -e /sdcard/romswitcher-tmp/datashare ]; then
+			rm -f /sdcard/romswitcher-tmp/datashare
+		else
+			echo $2 > /sdcard/romswitcher-tmp/datashare
+		fi
+	fi
+
+	if [ -e /sdcard/romswitcher-tmp/datashare ]; then
+		echo 1
+	else
+		echo 0
+	fi
+	;;
+
+esac

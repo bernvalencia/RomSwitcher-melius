@@ -1,0 +1,36 @@
+#!/sbin/busybox sh
+
+cat << CTAG
+{
+    name:GPU & Screen,
+    elements:[
+	{ SPane:{
+		title:"GPU Governor",
+		description:"The GPU governor determines how the GPU behaves in response to changes in workload. Changing the governor will impact how the GPU scales through the frequency steps available to you GPU."
+	}},
+	{ SOptionList:{
+                default:`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/trustzone/governor`,
+                action:"generic /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/trustzone/governor",
+                values:[
+			performance,
+			ondemand,
+			simple,
+                ]
+        }},
+	{ SPane:{
+                title:"mDNIe global controls",
+                description:"mobile Digital Natural Image engine control. Samsungs hardware image post-processor controls virtually any image manipulation."
+        }},
+	{ SOptionList:{
+		title:"Display Mode",
+                action:"mode /sys/devices/virtual/mdnie/mdnie/mode",
+                values:[
+			standard,
+			dynamic,
+			movie,
+			natural,
+                ]
+        }},
+    ]
+}
+CTAG
