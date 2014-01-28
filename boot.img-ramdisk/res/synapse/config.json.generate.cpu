@@ -10,7 +10,7 @@ cat << CTAG
 	{ SLiveLabel:{
 		title:"Current CPU Frequency",
 		refresh:500,
-		action:"echo Core 1: \`expr $(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq) \/ 1000\` MHz@nCore 2: \`expr $(cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq) \/ 1000\` Mhz"
+		action:"currentfreq"
 	}},
 	{ SLiveLabel:{
 		title:"Current CPU Temperature",
